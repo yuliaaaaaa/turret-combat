@@ -3,7 +3,7 @@ using Zenject;
 
 public class GameplayInstaller : MonoInstaller
 {
-    [SerializeField] private VehicleHealth vehicleHealth;
+    [SerializeField] private VehicleDamageReceiver vehicleHealth;
     [SerializeField] private EnemySpawner enemySpawner;
     [SerializeField] private GameManager gameManager;
     [SerializeField] private CarController carController;
@@ -14,7 +14,7 @@ public class GameplayInstaller : MonoInstaller
 
     public override void InstallBindings()
     {
-        Container.Bind<VehicleHealth>().FromInstance(vehicleHealth).AsSingle();
+        Container.Bind<VehicleDamageReceiver>().FromInstance(vehicleHealth).AsSingle();
         Container.Bind<EnemySpawner>().FromInstance(enemySpawner).AsSingle();
         Container.Bind<GameManager>().FromInstance(gameManager).AsSingle();
         Container.Bind<CarController>().FromInstance(carController).AsSingle();

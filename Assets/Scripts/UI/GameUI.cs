@@ -112,7 +112,7 @@ public class GameUI : MonoBehaviour
 
             case GameState.Win:
             case GameState.Lose:
-                _gameManager.RestartGame();
+                _gameManager.RestartGame(startImmediately: true);
                 break;
         }
     }

@@ -11,37 +11,20 @@ public class Health : MonoBehaviour
 
     public void Initialize(int maxHealth)
     {
-        Max = maxHealth;
-        Current = maxHealth;
+        Max = Mathf.Max(1, maxHealth);
+        Current = Max;
         Changed?.Invoke(Current, Max);
     }
 
     public void TakeDamage(int damage)
     {
-        if (damage <= 0 || Current <= 0)
+        if (Current <= 0)
             return;
 
-        Current -= damage;
-
-        if (Current < 0)
-            Current = 0;
-
+        Current = Mathf.Max(0, Current - Mathf.Max(0, damage));
         Changed?.Invoke(Current, Max);
 
         if (Current == 0)
             Died?.Invoke();
-    }
-
-    public void Heal(int amount)
-    {
-        if (amount <= 0 || Current <= 0)
-            return;
-
-        Current += amount;
-
-        if (Current > Max)
-            Current = Max;
-
-        Changed?.Invoke(Current, Max);
     }
 }

@@ -15,7 +15,9 @@ public enum GameState
 
 public class GameManager : MonoBehaviour
 {
-    [SerializeField] private VehicleHealth vehicleHealth;
+    private static bool _startImmediatelyAfterRestart;
+
+    [SerializeField] private VehicleDamageReceiver vehicleHealth;
 
     private CarController _carController;
     private CarFollowCamera _cameraFollow;
@@ -36,20 +38,27 @@ public class GameManager : MonoBehaviour
 
     private void Awake()
     {
-        ApplyState(GameState.WaitingForStart, notify: false);
         IsLevelFinishing = false;
+        ApplyState(GameState.WaitingForStart, notify: false);
     }
 
     private void Start()
     {
-        if (vehicleHealth == null)
-            return;
+        if (vehicleHealth != null)
+        {
+            _vehicleRuntimeHealth = vehicleHealth.Health;
 
-        _vehicleRuntimeHealth = vehicleHealth.Health;
-        if (_vehicleRuntimeHealth != null)
-            _vehicleRuntimeHealth.Died += OnVehicleDied;
+            if (_vehicleRuntimeHealth != null)
+                _vehicleRuntimeHealth.Died += OnVehicleDied;
+        }
 
         StateChanged?.Invoke(CurrentState);
+
+        if (_startImmediatelyAfterRestart)
+        {
+            _startImmediatelyAfterRestart = false;
+            StartGame();
+        }
     }
 
     private void OnDestroy()
@@ -98,6 +107,14 @@ public class GameManager : MonoBehaviour
         _finishRoutine = StartCoroutine(FinishSequence());
     }
 
+    public void WinGame()
+    {
+        if (IsTerminalState(CurrentState))
+            return;
+
+        ApplyState(GameState.Win);
+    }
+
     public void LoseGame()
     {
         if (IsTerminalState(CurrentState))
@@ -115,8 +132,10 @@ public class GameManager : MonoBehaviour
         ApplyState(GameState.Lose);
     }
 
-    public void RestartGame()
+    public void RestartGame(bool startImmediately = false)
     {
+        _startImmediatelyAfterRestart = startImmediately;
+
         Time.timeScale = 1f;
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }

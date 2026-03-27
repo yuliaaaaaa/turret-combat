@@ -18,7 +18,7 @@ public abstract class Enemy : MonoBehaviour, IDamageable
 
     protected Health Health { get; private set; }
     protected Transform VehicleTransform { get; private set; }
-    protected VehicleHealth VehicleHealth { get; private set; }
+    protected VehicleDamageReceiver VehicleHealth { get; private set; }
     protected EnemyConfig Config { get; private set; }
     protected GameManager GameManager { get; private set; }
 
@@ -33,7 +33,7 @@ public abstract class Enemy : MonoBehaviour, IDamageable
     public event Action<Enemy> Removed;
 
     [Inject]
-    public void Construct(VehicleHealth vehicleHealth, GameManager gameManager)
+    public void Construct(VehicleDamageReceiver vehicleHealth, GameManager gameManager)
     {
         VehicleTransform = vehicleHealth != null ? vehicleHealth.transform : null;
         VehicleHealth = vehicleHealth;
@@ -43,7 +43,9 @@ public abstract class Enemy : MonoBehaviour, IDamageable
     protected virtual void Awake()
     {
         Health = GetComponent<Health>();
-        Health.Died += OnDied;
+
+        if (Health != null)
+            Health.Died += OnDied;
 
         if (collidersToDisable == null || collidersToDisable.Length == 0)
             collidersToDisable = GetComponentsInChildren<Collider>(true);
@@ -191,12 +193,13 @@ public abstract class Enemy : MonoBehaviour, IDamageable
         yield return new WaitForSeconds(Config.AttackDelay);
 
         if (!IsDead)
-            VehicleHealth?.TakeDamageFromEnemy(Config.Damage, transform.position.x);
+            VehicleHealth?.ApplyEnemyDamage(Config.Damage, transform.position.x);
 
         if (!IsDead)
             enemyAnimator?.PlayFall();
 
         yield return new WaitForSeconds(Config.DespawnDelayAfterFall);
+
         Destroy(gameObject);
     }
 

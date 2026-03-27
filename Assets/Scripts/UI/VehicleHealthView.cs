@@ -8,19 +8,30 @@ public class VehicleHealthView : MonoBehaviour
     [SerializeField] private Image fillImage;
     [SerializeField] private TMP_Text healthText;
 
+    private VehicleDamageReceiver _vehicleHealth;
     private Health _health;
 
     [Inject]
-    public void Construct(VehicleHealth vehicleHealth)
+    public void Construct(VehicleDamageReceiver vehicleHealth)
     {
-        if (vehicleHealth != null)
-            _health = vehicleHealth.Health;
+        _vehicleHealth = vehicleHealth;
     }
 
     private void Start()
     {
-        if (_health == null)
+        if (_vehicleHealth == null)
+        {
+            Debug.LogError("VehicleHealthView: VehicleHealth is missing.", this);
             return;
+        }
+
+        _health = _vehicleHealth.Health;
+
+        if (_health == null)
+        {
+            Debug.LogError("VehicleHealthView: Health is missing.", this);
+            return;
+        }
 
         _health.Changed += OnHealthChanged;
         Refresh(_health.Current, _health.Max);
