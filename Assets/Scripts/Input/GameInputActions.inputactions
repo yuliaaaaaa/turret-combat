@@ -1,0 +1,77 @@
+{
+    "version": 1,
+    "name": "GameInputActions",
+    "maps": [
+        {
+            "name": "Gameplay",
+            "id": "065a1695-3454-4eb0-9c92-24bfb7e32c7e",
+            "actions": [
+                {
+                    "name": "Aim",
+                    "type": "Value",
+                    "id": "3f0f7a6e-49d6-4695-9f1e-606466c46ae2",
+                    "expectedControlType": "Axis",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
+                },
+                {
+                    "name": "LookDelta",
+                    "type": "Value",
+                    "id": "313356c8-5269-45bb-8196-8db69d9f4522",
+                    "expectedControlType": "Vector2",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "1D Axis",
+                    "id": "29449809-8e01-4391-b9f5-98f8520b7cef",
+                    "path": "1DAxis",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Aim",
+                    "isComposite": true,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "negative",
+                    "id": "3d8a42ca-fc63-4b1d-858d-b04311099028",
+                    "path": "<Keyboard>/a",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Aim",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "positive",
+                    "id": "db09b87d-1861-4090-b9b9-f943b312dbf5",
+                    "path": "<Keyboard>/d",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Aim",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "",
+                    "id": "88837274-a85a-485a-b841-4f198c9c9f0d",
+                    "path": "<Mouse>/delta",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "LookDelta",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        }
+    ],
+    "controlSchemes": []
+}
