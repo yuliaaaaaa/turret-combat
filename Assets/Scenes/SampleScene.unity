@@ -6600,7 +6600,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 830491ae58e66254cbdf9cd8005817eb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  defaultMoveSpeed: 5
+  defaultMoveSpeed: 4
   minMoveSpeed: 2
   maxMoveSpeed: 10
   xSmoothTime: 0.2
