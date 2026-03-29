@@ -5,6 +5,7 @@ public class Projectile : MonoBehaviour
 {
     [SerializeField] private float speed = 30f;
     [SerializeField] private float lifetime = 3f;
+    [SerializeField] private int damage = 1;
 
     [Header("VFX")]
     [SerializeField] private GameObject hitVFX;
@@ -34,14 +35,12 @@ public class Projectile : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("Enemy"))
+        if (other.TryGetComponent<IDamageable>(out var damageable))
         {
+            damageable.TakeDamage(damage);
             SpawnVFX();
             _audioManager?.PlayEnemyHit();
         }
-
-        if (other.TryGetComponent<IDamageable>(out var damageable))
-            damageable.TakeDamage(1);
 
         Destroy(gameObject);
     }

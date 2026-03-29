@@ -6,24 +6,30 @@ public class FinishWatcher : MonoBehaviour
     [SerializeField] private Transform carTransform;
     [SerializeField] private float finishDistance = 1f;
 
-    private GameManager _gameManager;
+    private GameStateService _gameStateService;
     private RoadGenerator _roadGenerator;
+    private LevelFlowCoordinator _levelFlowCoordinator;
+
     private Transform _finishPoint;
     private bool _isTriggered;
 
     [Inject]
-    public void Construct(GameManager gameManager, RoadGenerator roadGenerator)
+    public void Construct(
+        GameStateService gameStateService,
+        RoadGenerator roadGenerator,
+        LevelFlowCoordinator levelFlowCoordinator)
     {
-        _gameManager = gameManager;
+        _gameStateService = gameStateService;
         _roadGenerator = roadGenerator;
+        _levelFlowCoordinator = levelFlowCoordinator;
     }
 
     private void Update()
     {
-        if (_isTriggered || carTransform == null || _gameManager == null || _roadGenerator == null)
+        if (_isTriggered || carTransform == null || _gameStateService == null || _roadGenerator == null)
             return;
 
-        if (_gameManager.CurrentState != GameState.Playing)
+        if (_gameStateService.CurrentState != GameState.Playing)
             return;
 
         if (_finishPoint == null)
@@ -39,7 +45,7 @@ public class FinishWatcher : MonoBehaviour
         if (distance <= finishDistance)
         {
             _isTriggered = true;
-            _gameManager.ReachFinish();
+            _levelFlowCoordinator?.ReachFinish();
         }
     }
 

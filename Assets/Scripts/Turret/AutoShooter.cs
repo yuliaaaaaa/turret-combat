@@ -7,8 +7,8 @@ public class AutoShooter : MonoBehaviour
     [SerializeField] private Projectile projectilePrefab;
     [SerializeField] private float shotsPerSecond = 5f;
 
-    private EnemyEncounterTracker _enemyEncounterTracker;
-    private GameManager _gameManager;
+    private EnemyEncounterService _enemyEncounterService;
+    private GameStateService _gameStateService;
     private DiContainer _container;
 
     private float _shotTimer;
@@ -16,33 +16,33 @@ public class AutoShooter : MonoBehaviour
 
     [Inject]
     public void Construct(
-        EnemyEncounterTracker enemyEncounterTracker,
-        GameManager gameManager,
+        EnemyEncounterService enemyEncounterService,
+        GameStateService gameStateService,
         DiContainer container)
     {
-        _enemyEncounterTracker = enemyEncounterTracker;
-        _gameManager = gameManager;
+        _enemyEncounterService = enemyEncounterService;
+        _gameStateService = gameStateService;
         _container = container;
     }
 
     private void OnEnable()
     {
-        if (_enemyEncounterTracker == null)
+        if (_enemyEncounterService == null)
             return;
 
-        _enemyEncounterTracker.EncounterStarted += OnEncounterStarted;
-        _enemyEncounterTracker.EncounterEnded += OnEncounterEnded;
+        _enemyEncounterService.EncounterStarted += OnEncounterStarted;
+        _enemyEncounterService.EncounterEnded += OnEncounterEnded;
 
-        _isShootingEnabled = _enemyEncounterTracker.HasActiveEnemies;
+        _isShootingEnabled = _enemyEncounterService.HasActiveEnemies;
     }
 
     private void OnDisable()
     {
-        if (_enemyEncounterTracker == null)
+        if (_enemyEncounterService == null)
             return;
 
-        _enemyEncounterTracker.EncounterStarted -= OnEncounterStarted;
-        _enemyEncounterTracker.EncounterEnded -= OnEncounterEnded;
+        _enemyEncounterService.EncounterStarted -= OnEncounterStarted;
+        _enemyEncounterService.EncounterEnded -= OnEncounterEnded;
     }
 
     private void Update()
@@ -65,7 +65,7 @@ public class AutoShooter : MonoBehaviour
         if (!_isShootingEnabled)
             return false;
 
-        if (_gameManager == null || _gameManager.CurrentState != GameState.Playing)
+        if (_gameStateService == null || _gameStateService.CurrentState != GameState.Playing)
             return false;
 
         if (firePoint == null || projectilePrefab == null || _container == null)

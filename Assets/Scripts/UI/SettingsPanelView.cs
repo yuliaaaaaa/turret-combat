@@ -1,27 +1,55 @@
+using System;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using Zenject;
 
-public class SettingsPanelUI : MonoBehaviour
+public class SettingsPanelView : MonoBehaviour
 {
+    [Header("Root")]
+    [SerializeField] private GameObject root;
+    [SerializeField] private Button closeButton;
+
     [Header("Audio")]
     [SerializeField] private Slider musicSlider;
     [SerializeField] private Slider sfxSlider;
-    [SerializeField] private AudioManager audioManager;
 
     [Header("Car Speed")]
     [SerializeField] private Slider speedSlider;
     [SerializeField] private TMP_Text speedValueText;
-    [SerializeField] private CarController carController;
+
+    private AudioManager _audioManager;
+    private CarController _carController;
+
+    public bool IsOpen => root != null && root.activeSelf;
+
+    public event Action CloseClicked;
+
+    [Inject]
+    public void Construct(AudioManager audioManager, CarController carController)
+    {
+        _audioManager = audioManager;
+        _carController = carController;
+    }
+
+    private void Awake()
+    {
+        if (closeButton != null)
+            closeButton.onClick.AddListener(OnCloseClicked);
+    }
 
     private void Start()
     {
         SetupAudio();
         SetupSpeed();
+        Hide();
     }
 
     private void OnDestroy()
     {
+        if (closeButton != null)
+            closeButton.onClick.RemoveListener(OnCloseClicked);
+
         if (musicSlider != null)
             musicSlider.onValueChanged.RemoveListener(OnMusicChanged);
 
@@ -32,16 +60,28 @@ public class SettingsPanelUI : MonoBehaviour
             speedSlider.onValueChanged.RemoveListener(OnSpeedChanged);
     }
 
+    public void Show()
+    {
+        if (root != null)
+            root.SetActive(true);
+    }
+
+    public void Hide()
+    {
+        if (root != null)
+            root.SetActive(false);
+    }
+
     private void SetupAudio()
     {
-        if (audioManager == null)
+        if (_audioManager == null)
             return;
 
         if (musicSlider != null)
         {
             musicSlider.minValue = 0f;
             musicSlider.maxValue = 1f;
-            musicSlider.SetValueWithoutNotify(audioManager.MusicVolume);
+            musicSlider.SetValueWithoutNotify(_audioManager.MusicVolume);
             musicSlider.onValueChanged.AddListener(OnMusicChanged);
         }
 
@@ -49,41 +89,41 @@ public class SettingsPanelUI : MonoBehaviour
         {
             sfxSlider.minValue = 0f;
             sfxSlider.maxValue = 1f;
-            sfxSlider.SetValueWithoutNotify(audioManager.SfxVolume);
+            sfxSlider.SetValueWithoutNotify(_audioManager.SfxVolume);
             sfxSlider.onValueChanged.AddListener(OnSfxChanged);
         }
     }
 
     private void SetupSpeed()
     {
-        if (carController == null || speedSlider == null)
+        if (_carController == null || speedSlider == null)
             return;
 
-        speedSlider.minValue = carController.GetMinSpeed();
-        speedSlider.maxValue = carController.GetMaxSpeed();
+        speedSlider.minValue = _carController.GetMinSpeed();
+        speedSlider.maxValue = _carController.GetMaxSpeed();
         speedSlider.wholeNumbers = false;
-        speedSlider.SetValueWithoutNotify(carController.GetMoveSpeed());
+        speedSlider.SetValueWithoutNotify(_carController.GetMoveSpeed());
         speedSlider.onValueChanged.AddListener(OnSpeedChanged);
 
-        RefreshSpeedText(carController.GetMoveSpeed());
+        RefreshSpeedText(_carController.GetMoveSpeed());
     }
 
     private void OnMusicChanged(float value)
     {
-        audioManager?.SetMusicVolume(value);
+        _audioManager?.SetMusicVolume(value);
     }
 
     private void OnSfxChanged(float value)
     {
-        audioManager?.SetSfxVolume(value);
+        _audioManager?.SetSfxVolume(value);
     }
 
     private void OnSpeedChanged(float value)
     {
-        if (carController == null)
+        if (_carController == null)
             return;
 
-        carController.SetMoveSpeed(value);
+        _carController.SetMoveSpeed(value);
         RefreshSpeedText(value);
     }
 
@@ -91,5 +131,10 @@ public class SettingsPanelUI : MonoBehaviour
     {
         if (speedValueText != null)
             speedValueText.text = value.ToString("0.0");
+    }
+
+    private void OnCloseClicked()
+    {
+        CloseClicked?.Invoke();
     }
 }

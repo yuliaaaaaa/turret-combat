@@ -19,8 +19,8 @@ public class RoadGenerator : MonoBehaviour
     private readonly Queue<RoadChunk> _activeChunks = new();
 
     private EnemySpawner _enemySpawner;
-    private GameManager _gameManager;
-    private LevelProgressTracker _progressTracker;
+    private GameStateService _gameStateService;
+    private LevelProgressService _progressService;
 
     private RoadChunk _lastChunk;
     private Transform _finishPoint;
@@ -29,20 +29,15 @@ public class RoadGenerator : MonoBehaviour
 
     public Transform FinishPoint => _finishPoint;
 
-    public Transform GetFinishPoint()
-    {
-        return _finishPoint;
-    }
-
     [Inject]
     public void Construct(
         EnemySpawner enemySpawner,
-        GameManager gameManager,
-        LevelProgressTracker progressTracker)
+        GameStateService gameStateService,
+        LevelProgressService progressService)
     {
         _enemySpawner = enemySpawner;
-        _gameManager = gameManager;
-        _progressTracker = progressTracker;
+        _gameStateService = gameStateService;
+        _progressService = progressService;
     }
 
     private void Start()
@@ -66,6 +61,11 @@ public class RoadGenerator : MonoBehaviour
         RemoveOldChunks();
     }
 
+    public Transform GetFinishPoint()
+    {
+        return _finishPoint;
+    }
+
     public void ResetGenerator()
     {
         ClearChunks();
@@ -85,13 +85,13 @@ public class RoadGenerator : MonoBehaviour
                 break;
         }
 
-        if (_progressTracker != null && carTransform != null)
-            _progressTracker.Initialize(carTransform.position.z, levelLength);
+        if (_progressService != null && carTransform != null)
+            _progressService.Initialize(carTransform.position.z, levelLength);
     }
 
     private bool CanGenerate()
     {
-        if (_gameManager == null || _gameManager.CurrentState != GameState.Playing)
+        if (_gameStateService == null || _gameStateService.CurrentState != GameState.Playing)
             return false;
 
         if (_lastChunk == null || carTransform == null)
@@ -135,9 +135,7 @@ public class RoadGenerator : MonoBehaviour
         if (_lastChunk == null)
             return Instantiate(prefab, Vector3.zero, Quaternion.identity);
 
-        Vector3 spawnPosition =
-            _lastChunk.EndPoint.position - prefab.StartPoint.localPosition;
-
+        Vector3 spawnPosition = _lastChunk.EndPoint.position - prefab.StartPoint.localPosition;
         return Instantiate(prefab, spawnPosition, Quaternion.identity);
     }
 
@@ -146,13 +144,12 @@ public class RoadGenerator : MonoBehaviour
         if (chunk == null || chunk.StartPoint == null || chunk.EndPoint == null)
             return 0f;
 
-        return Mathf.Abs(
-            chunk.EndPoint.position.z - chunk.StartPoint.position.z);
+        return Mathf.Abs(chunk.EndPoint.position.z - chunk.StartPoint.position.z);
     }
 
     private void RemoveOldChunks()
     {
-        while (_activeChunks.Count > initialChunkCount)
+        while (_activeChunks.Count > initialChunkCount) 
         {
             RoadChunk oldChunk = _activeChunks.Dequeue();
 

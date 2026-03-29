@@ -18,13 +18,13 @@ public class EnemySpawner : MonoBehaviour
     private readonly Dictionary<EnemyType, EnemyBinding> _bindingsByType = new();
 
     private DiContainer _container;
-    private EnemyEncounterTracker _enemyEncounterTracker;
+    private EnemyEncounterService _enemyEncounterService;
 
     [Inject]
-    public void Construct(DiContainer container, EnemyEncounterTracker enemyEncounterTracker)
+    public void Construct(DiContainer container, EnemyEncounterService enemyEncounterService)
     {
         _container = container;
-        _enemyEncounterTracker = enemyEncounterTracker;
+        _enemyEncounterService = enemyEncounterService;
     }
 
     private void Awake()
@@ -70,7 +70,7 @@ public class EnemySpawner : MonoBehaviour
             DespawnEnemies(pair.Value);
 
         _chunkEnemies.Clear();
-        _enemyEncounterTracker?.ClearAll();
+        _enemyEncounterService?.Clear();
     }
 
     private bool CanSpawnForChunk(RoadChunk chunk)
@@ -118,7 +118,7 @@ public class EnemySpawner : MonoBehaviour
         enemy.Initialize(binding.config);
         enemy.Removed += OnEnemyRemoved;
 
-        _enemyEncounterTracker?.Register(enemy);
+        _enemyEncounterService?.Register(enemy);
 
         return enemy;
     }
@@ -147,7 +147,7 @@ public class EnemySpawner : MonoBehaviour
             return;
 
         removedEnemy.Removed -= OnEnemyRemoved;
-        _enemyEncounterTracker?.Unregister(removedEnemy);
+        _enemyEncounterService?.Unregister(removedEnemy);
 
         RoadChunk owningChunk = null;
 

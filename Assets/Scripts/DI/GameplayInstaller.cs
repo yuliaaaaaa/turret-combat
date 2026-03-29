@@ -3,28 +3,45 @@ using Zenject;
 
 public class GameplayInstaller : MonoInstaller
 {
-    [SerializeField] private VehicleDamageReceiver vehicleHealth;
-    [SerializeField] private EnemySpawner enemySpawner;
-    [SerializeField] private GameManager gameManager;
-    [SerializeField] private CarController carController;
-    [SerializeField] private CarFollowCamera carFollowCamera;
-    [SerializeField] private AudioManager audioManager;
-    [SerializeField] private LevelProgressTracker levelProgressTracker;
-    [SerializeField] private RoadGenerator roadGenerator;
-
     public override void InstallBindings()
     {
-        Container.Bind<VehicleDamageReceiver>().FromInstance(vehicleHealth).AsSingle();
-        Container.Bind<EnemySpawner>().FromInstance(enemySpawner).AsSingle();
-        Container.Bind<GameManager>().FromInstance(gameManager).AsSingle();
-        Container.Bind<CarController>().FromInstance(carController).AsSingle();
-        Container.Bind<CarFollowCamera>().FromInstance(carFollowCamera).AsSingle();
-        Container.Bind<AudioManager>().FromInstance(audioManager).AsSingle();
-        Container.Bind<LevelProgressTracker>().FromInstance(levelProgressTracker).AsSingle();
-        Container.Bind<RoadGenerator>().FromInstance(roadGenerator).AsSingle();
-        Container.Bind<EnemyEncounterTracker>()
-    .FromComponentInHierarchy()
-    .AsSingle();
+        BindServices();
+        BindSceneComponents();
+    }
 
+    private void BindServices()
+    {
+        Container.Bind<GameStateService>().AsSingle();
+        Container.Bind<SceneReloadService>().AsSingle();
+        Container.Bind<EnemyEncounterService>().AsSingle();
+        Container.Bind<LevelProgressService>().AsSingle();
+    }
+
+    private void BindSceneComponents()
+    {
+        Container.Bind<LevelFlowCoordinator>().FromComponentInHierarchy().AsSingle().NonLazy();
+        Container.Bind<GameTimeController>().FromComponentInHierarchy().AsSingle().NonLazy();
+
+        Container.Bind<CarController>().FromComponentInHierarchy().AsSingle().NonLazy();
+        Container.Bind<CarFollowCamera>().FromComponentInHierarchy().AsSingle().NonLazy();
+        Container.Bind<VehicleDamageReceiver>().FromComponentInHierarchy().AsSingle().NonLazy();
+        Container.Bind<AudioManager>().FromComponentInHierarchy().AsSingle().NonLazy();
+
+        Container.Bind<EnemySpawner>().FromComponentInHierarchy().AsSingle().NonLazy();
+        Container.Bind<RoadGenerator>().FromComponentInHierarchy().AsSingle().NonLazy();
+        Container.Bind<FinishWatcher>().FromComponentInHierarchy().AsSingle().NonLazy();
+
+        Container.Bind<AutoShooter>().FromComponentInHierarchy().AsSingle().NonLazy();
+        Container.Bind<TurretAimController>().FromComponentInHierarchy().AsSingle().NonLazy();
+
+        Container.Bind<VehicleHealthView>().FromComponentInHierarchy().AsSingle().NonLazy();
+        Container.Bind<LevelProgressView>().FromComponentInHierarchy().AsSingle().NonLazy();
+        Container.Bind<LevelProgressUpdater>().FromComponentInHierarchy().AsSingle().NonLazy();
+
+        Container.Bind<HudView>().FromComponentInHierarchy().AsSingle().NonLazy();
+        Container.Bind<PauseMenuView>().FromComponentInHierarchy().AsSingle().NonLazy();
+        Container.Bind<GameOverlayView>().FromComponentInHierarchy().AsSingle().NonLazy();
+        Container.Bind<SettingsPanelView>().FromComponentInHierarchy().AsSingle().NonLazy();
+        Container.Bind<GameUiCoordinator>().FromComponentInHierarchy().AsSingle().NonLazy();
     }
 }

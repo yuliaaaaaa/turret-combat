@@ -20,7 +20,7 @@ public abstract class Enemy : MonoBehaviour, IDamageable
     protected Transform VehicleTransform { get; private set; }
     protected VehicleDamageReceiver VehicleHealth { get; private set; }
     protected EnemyConfig Config { get; private set; }
-    protected GameManager GameManager { get; private set; }
+    protected GameStateService GameStateService { get; private set; }
 
     protected bool IsDead { get; private set; }
     protected bool HasAttacked { get; private set; }
@@ -33,11 +33,11 @@ public abstract class Enemy : MonoBehaviour, IDamageable
     public event Action<Enemy> Removed;
 
     [Inject]
-    public void Construct(VehicleDamageReceiver vehicleHealth, GameManager gameManager)
+    public void Construct(VehicleDamageReceiver vehicleHealth, GameStateService gameStateService)
     {
         VehicleTransform = vehicleHealth != null ? vehicleHealth.transform : null;
         VehicleHealth = vehicleHealth;
-        GameManager = gameManager;
+        GameStateService = gameStateService;
     }
 
     protected virtual void Awake()
@@ -165,10 +165,10 @@ public abstract class Enemy : MonoBehaviour, IDamageable
 
     private bool CanUpdateBehaviour()
     {
-        if (IsDead || IsFinishing || Config == null || GameManager == null)
+        if (IsDead || IsFinishing || Config == null || GameStateService == null)
             return false;
 
-        return GameManager.CurrentState == GameState.Playing;
+        return GameStateService.CurrentState == GameState.Playing;
     }
 
     private float GetSqrDistanceToVehicle()

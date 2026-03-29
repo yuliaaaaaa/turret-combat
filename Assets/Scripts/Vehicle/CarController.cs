@@ -17,7 +17,7 @@ public class CarController : MonoBehaviour
     [SerializeField] private float hitOffsetDistance = 0.35f;
     [SerializeField] private float hitOffsetReturnSpeed = 3.5f;
 
-    private GameManager _gameManager;
+    private GameStateService _gameStateService;
 
     private float _moveSpeed;
     private float _targetX;
@@ -27,9 +27,9 @@ public class CarController : MonoBehaviour
     private bool _canMove = true;
 
     [Inject]
-    public void Construct(GameManager gameManager)
+    public void Construct(GameStateService gameStateService)
     {
-        _gameManager = gameManager;
+        _gameStateService = gameStateService;
     }
 
     private void Awake()
@@ -108,8 +108,8 @@ public class CarController : MonoBehaviour
     private bool CanMove()
     {
         return _canMove &&
-               _gameManager != null &&
-               _gameManager.CurrentState == GameState.Playing;
+               _gameStateService != null &&
+               _gameStateService.CurrentState == GameState.Playing;
     }
 
     private void LoadSpeed()

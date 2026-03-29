@@ -16,7 +16,7 @@ public class TurretAimController : MonoBehaviour
     [SerializeField] private float deceleration = 14f;
     [SerializeField] private float rotationSmoothTime = 0.08f;
 
-    private GameManager _gameManager;
+    private GameStateService _gameStateService;
 
     private float _targetYaw;
     private float _currentYaw;
@@ -24,9 +24,9 @@ public class TurretAimController : MonoBehaviour
     private float _yawSmoothVelocity;
 
     [Inject]
-    public void Construct(GameManager gameManager)
+    public void Construct(GameStateService gameStateService)
     {
-        _gameManager = gameManager;
+        _gameStateService = gameStateService;
     }
 
     private void Start()
@@ -36,10 +36,10 @@ public class TurretAimController : MonoBehaviour
 
     private void Update()
     {
-        if (_gameManager == null || turretPivot == null || inputReader == null)
+        if (_gameStateService == null || turretPivot == null || inputReader == null)
             return;
 
-        if (_gameManager.CurrentState != GameState.Playing)
+        if (_gameStateService.CurrentState != GameState.Playing)
         {
             ReturnToCenter();
             return;
@@ -100,4 +100,4 @@ public class TurretAimController : MonoBehaviour
     {
         turretPivot.localRotation = Quaternion.Euler(0f, yaw, 0f);
     }
-}
+} 

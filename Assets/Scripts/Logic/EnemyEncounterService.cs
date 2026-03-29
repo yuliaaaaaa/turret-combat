@@ -1,8 +1,7 @@
 using System;
 using System.Collections.Generic;
-using UnityEngine;
 
-public class EnemyEncounterTracker : MonoBehaviour
+public class EnemyEncounterService
 {
     private readonly HashSet<Enemy> _activeEnemies = new();
 
@@ -41,7 +40,7 @@ public class EnemyEncounterTracker : MonoBehaviour
         }
     }
 
-    public void ClearAll()
+    public void Clear()
     {
         if (_activeEnemies.Count == 0)
             return;
