@@ -1,6 +1,6 @@
 <img width="1327" height="1080" alt="image" src="https://github.com/user-attachments/assets/4b749b4d-d68a-4094-8b74-89e35c681bb9" />
 
-# Unity Runner Shooter (Test Project)
+# Unity Runner Shooter
 A small Unity project where the player controls a car that moves forward and automatically shoots enemies.  
 The main goal is to complete the level, destroy enemies, and reach the finish line.
 
